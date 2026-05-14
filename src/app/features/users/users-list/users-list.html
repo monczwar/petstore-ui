@@ -1,1 +1,51 @@
-<p>users-list works!</p>
+<section id="users-list" class="users-card">
+    <div class="users-card-header">
+        <h2>User Accounts</h2>
+        <button
+            type ="button"
+            class = "create-user-button"
+            (click) = "createUser()" >
+            Create new user
+        </button>
+    </div>
+
+    @if (users.length > 0) {
+    <table class="users-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>E-mail</th>
+                <th>Phone</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (user of users; track user.id) {
+            <tr (click) = "onRowClick(user)" [class.user-table-row-selected]="user.id === selectedUserId">
+                <td>#{{user.id}}</td>
+                <td>{{user.username}}</td>
+                <td>{{user.firstName}}</td>
+                <td>{{user.lastName}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.phone}}</td>
+                <td>
+                    <span class="status-badge" [class.status-inactive]="user.userStatus === 0" >
+                        {{user.userStatus}}
+                    </span>
+                </td>
+            </tr>
+            }
+        </tbody>
+
+
+    </table>
+    } @else {
+                <div>
+                    <h3>No users found.</h3> 
+                </div>
+            } 
+
+</section>

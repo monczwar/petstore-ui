@@ -1,1 +1,13 @@
-<p>side-panel works!</p>
+<aside class="side-panel">
+    <div class="side-panel-logo">
+        <img src="assets/logo.png" alt="logo" class="logo-image">
+        <span class="logo-title">Pet Store</span>
+        
+    </div>
+  <nav class="side-panel-nav">
+
+    <a class="nav-item" routerLinkActive="active" routerLink="/" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+    <a class="nav-item" routerLinkActive="active" routerLink="/users" [routerLinkActiveOptions]="{ exact: true }">Users</a>
+
+  </nav>
+</aside>

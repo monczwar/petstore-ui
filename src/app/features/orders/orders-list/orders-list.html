@@ -1,0 +1,68 @@
+<section id="orders-list" class="orders-card">
+    <div class="orders-card-header">
+        <h2>Order Management</h2>
+        <div class="orders-card-header-buttons">
+            <button
+                type ="button"
+                class = "create-order-button"
+                (click) = "createOrder()" >
+                Create new order
+            </button>
+            <button
+                type ="button"
+                class = "edit-order-button"
+                (click) = "editOrder()" >
+                Edit order
+            </button> 
+            <button
+                type ="button"
+                class = "delete-order-button"
+                (click) = "deleteOrder()" >
+                Delete order
+            </button>
+        </div>
+    </div>
+
+  @if(orders$ | async; as orders) {
+  @if (orders.length > 0) {
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>E-mail</th>
+                <th>Phone</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (order of orders; track order.id) {
+            <tr (click) = "onRowClick(order)" [class.orders-table-row-selected]="order.id === selectedOrderId">
+                <td>#{{order.id}}</td>
+                <td>#{{order.petId}}</td>
+                <td>{{order.quantity}}</td>
+                <td>{{order.shipDate}}</td>
+                <td>
+                    <span class="status-badge" [class.status-inactive]="order.status === ''" >
+                        {{order.status}}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge" [class.status-inactive]="order.complete === false" >
+                        {{order.complete}}
+                    </span>
+                </td>
+            </tr>
+        }
+        </tbody>
+
+
+    </table>
+  } @else {
+    <p class="orders-empty">No orders found.</p>
+  }
+}
+
+</section>

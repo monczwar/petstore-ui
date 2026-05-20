@@ -9,7 +9,8 @@
         </button>
     </div>
 
-    @if (users.length > 0) {
+  @if(users$ | async; as users) {
+  @if (users.length > 0) {
     <table class="users-table">
         <thead>
             <tr>
@@ -42,10 +43,9 @@
 
 
     </table>
-    } @else {
-                <div>
-                    <h3>No users found.</h3> 
-                </div>
-            } 
+  } @else {
+    <p class="users-empty">No users found.</p>
+  }
+}
 
 </section>

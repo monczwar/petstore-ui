@@ -11,7 +11,7 @@ import { PetstoreApiUser } from '../models/User';
 export class UserService {
 
   private readonly httpClient: HttpClient = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl + '/user';
+  private readonly apiUrl = environment.apiUrl + '/users/by-username';
 
   getUsersByUserNames(usernames: string[]): Observable<PetstoreApiUser[]> {
     if(usernames.length === 0) {

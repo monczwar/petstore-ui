@@ -3,17 +3,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription, take } from 'rxjs';
 import { UserService } from '../../../services/user.service';
 import { PetstoreApiUser } from '../../../models/User';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-users-list',
-  imports: [],
+  imports: [AsyncPipe],
   templateUrl: './users-list.html',
   styleUrl: './users-list.scss',
 })
-export class UsersList implements OnInit, OnDestroy {
+export class UsersList implements OnDestroy {
 
   protected users: PetstoreApiUser[] = [];
-  protected readonly userNames: string[] = ['johndoe'];
+  protected readonly userNames: string[] = ['johndoe', 'alice.moss', 'bob.kane', 'carol.smith', 'dave.lee'];
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
   protected readonly userService = inject(UserService);
@@ -23,16 +24,6 @@ protected routeSub$: Subscription;
 @Output() userSelected = new EventEmitter<void>();
 
   users$: Observable<PetstoreApiUser[]> = this.userService.getUsersByUserNames(this.userNames);
-
-ngOnInit(): void {
-  this.users$ = this.userService.getUsersByUserNames(this.userNames)
-  .pipe(take(1));
-  
-  this.users$.subscribe(result => {
-    console.log('Fetched users:', result);
-    this.users = result;
-  });
-}
 
 constructor() {
     this.routeSub$ = this.route.queryParams.subscribe(params => {

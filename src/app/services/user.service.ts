@@ -18,10 +18,10 @@ export class UserService {
 
 
   private readonly httpClient: HttpClient = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl;
+  private readonly apiUrl = environment.apiUrl + '/users';
 
    public getUsers(): Observable<PetstoreApiUser[]> {
-    return this.httpClient.get<PetstoreApiUser[]>(`${this.apiUrl}/users`);
+    return this.httpClient.get<PetstoreApiUser[]>(`${this.apiUrl}`);
   }
 
   public searchUsers(criteria: UserSearchParams): Observable<PetstoreApiUser[]> {
@@ -37,6 +37,6 @@ export class UserService {
       params = params.set('lastName', criteria.lastName);
     }
 
-    return this.httpClient.get<PetstoreApiUser[]>(`${this.apiUrl}/users/search`, { params });
+    return this.httpClient.get<PetstoreApiUser[]>(`${this.apiUrl}/search`, { params });
   }
 }

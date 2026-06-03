@@ -23,6 +23,24 @@
         </div>
     </div>
 
+  <div class="orders-search" [formGroup]="searchControl">
+    <label class="orders-search-field">
+      <span>Pet ID</span>
+      <input type="number" formControlName="petId" placeholder="123" />
+    </label>
+    <label class="orders-search-field">
+      <span>Status</span>
+      <input type="text" formControlName="status" placeholder="Pending" />
+    </label>
+    <label class="orders-search-field">
+      <span>Complete</span>
+      <input type="checkbox" formControlName="complete" />
+    </label>
+    <div class="orders-search-actions">
+      <button type="button" class="orders-search-clear-button" (click)="clearSearch()">Clear</button>
+    </div>
+  </div>
+
   @if(orders$ | async; as orders) {
   @if (orders.length > 0) {
     <table class="orders-table">

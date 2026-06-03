@@ -1,13 +1,14 @@
 import { Component, EventEmitter, inject, OnDestroy, Output } from '@angular/core';
 import { PetstoreApiOrder } from '../../../models/Order';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OrderService } from '../../../services/order.service';
-import { Observable, Subscription } from 'rxjs';
+import { OrderSearchParams, OrderService } from '../../../services/order.service';
+import { debounceTime, Observable, startWith, Subscription, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-orders-list',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, ReactiveFormsModule],
   templateUrl: './orders-list.html',
   styleUrl: './orders-list.scss',
 })
@@ -22,8 +23,30 @@ protected selectedOrderId: number | null = null;
 @Output() orderSelected = new EventEmitter<void>();
 protected routeSub$: Subscription;
 
+  protected readonly searchControl = new FormGroup({
+    petId: new FormControl('', { nonNullable: true }),
+    status: new FormControl('', { nonNullable: true }),
+    complete: new FormControl('', { nonNullable: true }),
+  });
 
-  orders$: Observable<PetstoreApiOrder[]> = this.orderService.getAllOrders();
+
+     protected orders$: Observable<PetstoreApiOrder[]> = this.searchControl.valueChanges.pipe(
+      startWith(this.searchControl.value),
+      debounceTime(300),
+      switchMap((value) => {
+        const criteria: OrderSearchParams = {
+          petId: Number.parseInt((value.petId ?? '').trim()) || undefined,
+          status: (value.status ?? '').trim() || undefined,
+          complete: (value.complete ?? '').trim() === 'true' || undefined,
+        };
+  
+        if (!criteria.petId && !criteria.status && !criteria.complete) {
+          return this.orderService.getAllOrders();
+        }
+  
+        return this.orderService.searchOrders(criteria);
+      }),
+    );
 
   constructor() {
     this.routeSub$ = this.route.queryParams.subscribe(params => {
@@ -34,6 +57,10 @@ protected routeSub$: Subscription;
       }
     });
 }
+
+  clearSearch(): void {
+    this.searchControl.reset();
+  }
 
    createOrder() {
     alert('Create order is not implemented yet');

@@ -1,13 +1,14 @@
 import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subscription, take } from 'rxjs';
-import { UserService } from '../../../services/user.service';
+import { debounceTime, Observable, startWith, Subscription, switchMap, take } from 'rxjs';
+import { UserSearchParams, UserService } from '../../../services/user.service';
 import { PetstoreApiUser } from '../../../models/User';
 import { AsyncPipe } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-users-list',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, ReactiveFormsModule],
   templateUrl: './users-list.html',
   styleUrl: './users-list.scss',
 })
@@ -23,7 +24,29 @@ protected selectedUserId: number | null = null;
 protected routeSub$: Subscription;
 @Output() userSelected = new EventEmitter<void>();
 
-  users$: Observable<PetstoreApiUser[]> = this.userService.getUsersByUserNames(this.userNames);
+  protected readonly searchControl = new FormGroup({
+    email: new FormControl('', { nonNullable: true }),
+    firstName: new FormControl('', { nonNullable: true }),
+    lastName: new FormControl('', { nonNullable: true }),
+  });
+
+   protected users$: Observable<PetstoreApiUser[]> = this.searchControl.valueChanges.pipe(
+    startWith(this.searchControl.value),
+    debounceTime(300),
+    switchMap((value) => {
+      const criteria: UserSearchParams = {
+        email: (value.email ?? '').trim() || undefined,
+        firstName: (value.firstName ?? '').trim() || undefined,
+        lastName: (value.lastName ?? '').trim() || undefined,
+      };
+
+      if (!criteria.email && !criteria.firstName && !criteria.lastName) {
+        return this.userService.getUsers();
+      }
+
+      return this.userService.searchUsers(criteria);
+    }),
+  );
 
 constructor() {
     this.routeSub$ = this.route.queryParams.subscribe(params => {
@@ -36,6 +59,10 @@ constructor() {
 }
   ngOnDestroy(): void {
     this.routeSub$.unsubscribe();
+  }
+
+    clearSearch(): void {
+    this.searchControl.reset();
   }
 
   createUser() {
